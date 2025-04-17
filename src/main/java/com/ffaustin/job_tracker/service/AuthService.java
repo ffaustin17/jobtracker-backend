@@ -30,28 +30,31 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final EmailService emailService;
+    //private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final SendGridService sendGridService;
 
     public AuthService(
             UserRepository userRepository,
             VerificationTokenRepository verificationTokenRepository,
-            EmailService emailService,
+            //EmailService emailService,
             BCryptPasswordEncoder passwordEncoder,
             AuthenticationManager authManager,
             JwtUtil jwtUtil,
-            PasswordResetTokenRepository passwordResetTokenRepository)
+            PasswordResetTokenRepository passwordResetTokenRepository,
+            SendGridService sendGridService)
     {
         this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
-        this.emailService = emailService;
+        //this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.sendGridService = sendGridService;
     }
 
 
@@ -86,8 +89,10 @@ public class AuthService {
 
         verificationTokenRepository.save(verificationToken);
 
+        String html = sendGridService.buildVerificationEmail(token);
+
         //send email
-        emailService.sendVerificationEmail(user.getEmail(), token);
+        sendGridService.sendEmail(user.getEmail(), "Verify Your JobTrackr Account", html);
         logger.info("Verification token sent to user: {}", user.getEmail());
     }
 
@@ -169,8 +174,14 @@ public class AuthService {
         passwordResetTokenRepository.save(resetToken);
 
         //send email (mock)
-        String resetLink = "http://localhost:80080/api/auth/reset-password?token="+ token;
-        emailService.sendEmail(user.getEmail(), "Password Reset Request", "[MOCK EMAIL] To reset your password, click this link: " + resetLink);
+        //String resetLink = "http://localhost:80080/api/auth/reset-password?token="+ token;
+        //emailService.sendVerificationEmail(user.getEmail(), token);
+
+        String html = "<p>Click below to reset your password:</p>" +
+                "<a href=\"http://localhost:8080/api/auth/verify?token=" + token + "\">Reset Password</a>";
+
+        //send email
+        sendGridService.sendEmail(user.getEmail(), "Confirm Your Reset Password Request", html);
 
         logger.info("Password reset token sent to: {}", user.getEmail());
     }
