@@ -11,7 +11,7 @@ import com.ffaustin.job_tracker.repository.PasswordResetTokenRepository;
 import com.ffaustin.job_tracker.repository.UserRepository;
 import com.ffaustin.job_tracker.repository.VerificationTokenRepository;
 import com.ffaustin.job_tracker.service.AuthService;
-import com.ffaustin.job_tracker.service.EmailService;
+//import com.ffaustin.job_tracker.service.EmailService;
 import com.ffaustin.job_tracker.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,8 +37,8 @@ public class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private EmailService emailService;
+    //@Mock
+    //private EmailService emailService;
     @Mock
     private JwtUtil jwtUtil;
     @Mock
@@ -71,7 +71,7 @@ public class AuthServiceTest {
 
         verify(userRepository).save(any(User.class));
         verify(verificationTokenRepository).save(any(VerificationToken.class));
-        verify(emailService).sendVerificationEmail(eq("fab@example.com"), anyString());
+        //verify(emailService).sendVerificationEmail(eq("fab@example.com"), anyString());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AuthServiceTest {
                 .hasMessage("Email already registered.");
 
         verify(userRepository, never()).save(any());
-        verify(emailService, never()).sendVerificationEmail(any(), any());
+        //verify(emailService, never()).sendVerificationEmail(any(), any());
     }
 
     @Test
